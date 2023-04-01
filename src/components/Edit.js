@@ -5,8 +5,9 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useState, useEffect } from 'react';
 import Employee from './Employee';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 function Edit() {
     let history=useNavigate();
@@ -15,28 +16,41 @@ function Edit() {
     const [age,setAge]=useState('');
     const [designation,setDesignation]=useState('');
     const [salary,setSalary]=useState('');
+    const params=useParams();
+    console.log(params.id);
+    const fetchEmployee=async()=>{
+      const result=await axios.get('http://localhost:8000/getanemployee/'+params.id)
+      console.log(result.data.employees);
+      setId(result.data.id)
+
+    }
     useEffect(()=>{
-        setId(localStorage.getItem('ID'));
-        setEmpname(localStorage.getItem('NAME'));
-        setAge(localStorage.getItem('AGE'));
-        setDesignation(localStorage.getItem('DESIGNATION'));
-        setSalary(localStorage.getItem('SALARY'));
+        // setId(localStorage.getItem('ID'));
+        // setEmpname(localStorage.getItem('NAME'));
+        // setAge(localStorage.getItem('AGE'));
+        // setDesignation(localStorage.getItem('DESIGNATION'));
+        // setSalary(localStorage.getItem('SALARY'));
+        fetchEmployee()
     },[])
     // console.log(id);
     // console.log(empname);
-    var index=Employee.map(item=>item.id).indexOf(id);
+    // var index=Employee.map(item=>item.id).indexOf(id);
     // console.log(index);
-    const handleUpdate=(e)=>{
+    const handleUpdate=async(e)=>{
         e.preventDefault();//avoiding refresh
         // console.log(e);
-        let emp=Employee[index];//full details of employee when button clicked
+        // let emp=Employee[index];//full details of employee when button clicked
         // console.log(emp);
-        emp.id=id;
-        emp.empName=empname;
-        emp.age=age;
-        emp.designation=designation;
-        emp.salary=salary;
-        console.log(emp);
+        // emp.id=id;
+        // emp.empName=empname;
+        // emp.age=age;
+        // emp.designation=designation;
+        // emp.salary=salary;
+        // console.log(emp);
+           const body={
+            id,empname,age,designation,salary
+           }
+           const result=await axios.post('http://localhost:8000/updateEmployee',body)
         history('/');
 
     }

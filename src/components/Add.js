@@ -8,28 +8,38 @@ import Employee from './Employee';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import uuid from 'react-uuid';
+import axios from 'axios';
 
 
 function Add() {
     let history=useNavigate();
-    // const [id,setId]=useState('');
+    const [id,setId]=useState('');
     const [empname,setEmpname]=useState('');
     const [age,setAge]=useState('');
     const [designation,setDesignation]=useState('');
     const [salary,setSalary]=useState('');
-    const handleAdd=(e)=>{
+    useEffect(()=>{
+      setId(uuid().slice(0,3))
+    })
+    const handleAdd=async(e)=>{
         e.preventDefault();
-        let ids=uuid();//an id is generated in console
+        setId(uuid().slice(0,3))
+        // let ids=uuid();//an id is generated in console
         // console.log(ids);
-        let uniqueId=ids.slice(0,8);//1st 8 digits of generated id
+        // let uniqueId=ids.slice(0,8);
+        // let id=uniqueId//1st 8 digits of generated id
         // console.log(uniqueId);
-        Employee.push({
-            id:uniqueId,
-            empName:empname,
-            age:age,
-            designation:designation,
-            salary:salary
-        })
+        // Employee.push({
+        //     id:uniqueId,
+        //     empName:empname,
+        //     age:age,
+        //     designation:designation,
+        //     salary:salary
+        // })
+        const body={
+          id,empname,age,designation,salary
+        }
+        const result=await axios.post('http://localhost:8000/addemployee',body)
         history('/');
     
     }

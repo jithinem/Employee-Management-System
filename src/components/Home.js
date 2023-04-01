@@ -6,18 +6,33 @@ import { FaEdit } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useState,useEffect } from 'react';
 
 
 
 function Home() {
+  const [allEmployees,setAllEmployees]=useState([]);
+  const fetchData=async()=>{
+    const result=await axios.get('http://localhost:8000/allemployees')
+    // console.log(result);
+    // console.log(result.data.employees);
+    setAllEmployees(result.data.employees)
+  }
+  useEffect(()=>{
+    fetchData()
+  },[])
+  // console.log(allEmployees);
   const history=useNavigate();
-  const handleDelete=(id)=>{
+  const handleDelete=async(id)=>{
     // alert('delete')//for checking only
     // console.log(Employee.map(item=>item.id).indexOf(id));//for checking only
-    var index=Employee.map(item=>item.id).indexOf(id);
-    Employee.splice(index,1);//item removed
-    console.log(Employee);//array position with remaining items
-    history('/');
+    // var index=Employee.map(item=>item.id).indexOf(id);
+    // Employee.splice(index,1);//item removed
+    // console.log(Employee);//array position with remaining items
+    // history('/');
+       const result=await axios.delete('http://localhost:8000/deleteemployee/'+id)
+       alert(result.data.message)
   }
   const handleEdit=(id,empName,age,designation,salary)=>{
     localStorage.setItem("ID",id);
@@ -49,20 +64,23 @@ function Home() {
       </thead>
       <tbody>
         {
-            Employee && Employee.length>0?
-            Employee.map((item)=>(
+            // Employee && Employee.length>0?
+            // Employee.map((item)=>(
+            allEmployees.map((item)=>(
+
                 <tr>
                 <td>{item.id}</td>
-                <td>{item.empName}</td>
+                <td>{item.empname}</td>
                 <td>{item.age}</td>
                 <td>{item.designation}</td>
                 <td>{item.salary}</td>
                 <td>
-                  <Link to={'/edit'} ><Button onClick={()=>handleEdit(item.id,item.empName,item.age,item.designation,item.salary)} className='me-3' variant="primary">Edit <FaEdit/> </Button></Link>
+                  <Link to={'/edit/'+item.id} ><Button onClick={()=>handleEdit(item.id,item.empName,item.age,item.designation,item.salary)} className='me-3' variant="primary">Edit <FaEdit/> </Button></Link>
                   <Button onClick={()=>handleDelete(item.id)} variant="danger">Delete <FaTrashAlt/></Button>
                 </td>
               </tr>      
-            )):'No data available'
+            ))
+            // :'No data available'
         }
       </tbody>
     </Table>
